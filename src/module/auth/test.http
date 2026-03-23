@@ -1,0 +1,41 @@
+### Variabile de mediu (ajustează portul dacă e necesar)
+@hostname = localhost
+@port = 3000
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+
+### 1. Test Înregistrare (Succes)
+# Trimite date valide conform RegisterDto
+POST http://{{host}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "user.test@example.com",
+  "password": "Password123!",
+  "firstName": "Alex",
+  "lastName": "Ionescu"
+}
+
+### 2. Test Înregistrare (Eroare - Email deja existent)
+# Rulează asta a doua oară cu același email pentru a testa ConflictException
+POST http://{{host}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "user.test@example.com",
+  "password": "Password123!",
+  "firstName": "Alex",
+  "lastName": "Ionescu"
+}
+
+### 3. Test Înregistrare (Eroare - Validare DTO)
+# Parolă prea scurtă și email invalid pentru a vedea erorile de la class-validator
+POST http://{{host}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "not-an-email",
+  "password": "123",
+  "firstName": "A",
+  "lastName": ""
+}
