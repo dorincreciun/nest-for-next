@@ -4,9 +4,10 @@ import { AuthController } from './auth.controller';
 import { TokenModule } from '../token/token.module';
 import { HashService } from './services/hash.service';
 import { UserModule } from '../user/user.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
-	imports: [TokenModule, UserModule],
+	imports: [TokenModule, UserModule, MailModule],
 	providers: [AuthService, HashService],
 	controllers: [AuthController],
 })
