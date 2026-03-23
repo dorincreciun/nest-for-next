@@ -1,0 +1,70 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum VerificationTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  TWO_FACTOR
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  email          String   @unique
+  hashedPassword String   @map("password")
+  firstName      String   @map("first_name")
+  lastName       String   @map("last_name")
+  role           UserRole @default(USER)
+
+  sessions           Session[]
+  isVerified         Boolean             @default(false) @map("is_verified")
+  isTwoFactorEnabled Boolean             @default(false) @map("is_2fa_enabled")
+  verificationTokens VerificationToken[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model VerificationToken {
+  id        Int                   @id @default(autoincrement())
+  token     String                @unique
+  type      VerificationTokenType
+  expiresAt DateTime              @map("expires_at")
+  userId    Int                   @map("user_id")
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
+  @@map("verification_tokens")
+}
+
+model Session {
+  id           Int    @id @default(autoincrement())
+  sessionToken String @unique @map("session_token")
+  userId       Int    @map("user_id")
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  ipAddress String @map("ip_address")
+  userAgent String @map("user_agent")
+
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  lastUsedAt DateTime @default(now()) @map("last_used_at")
+  expiresAt  DateTime @map("expires_at")
+
+  @@index([userId])
+  @@map("sessions")
+}
