@@ -12,10 +12,6 @@ export class TokenService {
 		private readonly jwtService: JwtService,
 	) {}
 
-	generateActivationToken() {
-		return randomInt(100000, 900000).toString();
-	}
-
 	async generateRefreshToken(payload: JwtPayloadInterface): Promise<string> {
 		return this.jwtService.signAsync(payload, {
 			secret: this.configService.get('JWT_REFRESH_SECRET'),
@@ -29,6 +25,4 @@ export class TokenService {
 			expiresIn: '15m',
 		});
 	}
-
-	generate2FAToken() {}
 }
